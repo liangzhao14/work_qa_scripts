@@ -1,0 +1,4 @@
+文档：11.xlsx 的 question列 为发送给模型的问题
+文件：getExcelData.py 读取指定路径的excel文件
+文件：AskRequests.py AskThreadNew.py 配置信息
+文件：main.py 总执行

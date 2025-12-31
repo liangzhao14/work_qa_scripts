@@ -1,0 +1,40 @@
+{
+  "test_times": 3,
+  "lcp_threshold_ms": 2000,
+  "results": [
+    {
+      "url": "https://www.baidu.com",
+      "http_avg": {
+        "avg_ttfb_s": 8.237,
+        "avg_total_time_s": 8.239
+      },
+      "browser_avg": {
+        "avg_dns_ms": 2.33,
+        "avg_tcp_ms": 9.67,
+        "avg_ttfb_ms": 32.33,
+        "avg_dom_content_loaded_ms": 1373.67,
+        "avg_load_ms": 2261.67,
+        "avg_lcp_ms": 1102.67
+      },
+      "page_response_time_requirement": "LCP ≤ 2000ms",
+      "result": "PASS"
+    },
+    {
+      "url": "https://cn.bing.com/",
+      "http_avg": {
+        "avg_ttfb_s": 0.723,
+        "avg_total_time_s": 0.727
+      },
+      "browser_avg": {
+        "avg_dns_ms": 1.33,
+        "avg_tcp_ms": 8.67,
+        "avg_ttfb_ms": 69,
+        "avg_dom_content_loaded_ms": 162,
+        "avg_load_ms": 162,
+        "avg_lcp_ms": 128
+      },
+      "page_response_time_requirement": "LCP ≤ 2000ms",
+      "result": "PASS"
+    }
+  ]
+}
