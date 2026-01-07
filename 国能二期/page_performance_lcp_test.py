@@ -4,8 +4,10 @@ import time
 
 # URL = "https://cloud-skgs-ilink.chnenergy.com.cn/" # 主页
 # URL = "https://cloud-skgs-ilink.chnenergy.com.cn/aicc-data-process/#/modelcompression?zone=default&activeRule=%2Faicc-bml" # 量化
-URL = "https://cloud-skgs-ilink.chnenergy.com.cn/aicc-console/#/operate/analysis/index?activeRule=%2Faicc-console" # 监控
+# URL = "https://cloud-skgs-ilink.chnenergy.com.cn/aicc-console/#/operate/analysis/index?activeRule=%2Faicc-console" # 监控
+URL = "https://cn.bing.com/"
 TEST_TIMES = 3
+
 TIMEOUT = 60000
 SLA_MS = 2000   # 2 秒
 

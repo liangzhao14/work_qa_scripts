@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标准北京时间</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .title {
+            color: #4CAF50;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 30px 0 30px 0;
+        }
+
+        .date-info {
+            color: #000;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .date-info a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .date-info a:hover {
+            text-decoration: underline;
+        }
+
+        .sync-info {
+            color: #221ab1;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 20px 0;
+        }
+
+        .time-display {
+            text-align: center;
+            font-size: 120px;
+            font-weight: bold;
+            margin-top: 40px;
+            margin-bottom: calc(100vh - 300px);
+            color: #3385ff;
+            letter-spacing: 2px;
+        }
+
+        .time-controls {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .time-controls h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .time-input-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .time-input-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-input-item label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .time-input-item input {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-set {
+            background-color: #0066cc;
+            color: white;
+        }
+
+        .btn-set:hover {
+            background-color: #0052a3;
+        }
+
+        .btn-reset {
+            background-color: #666;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background-color: #555;
+        }
+
+        .status-info {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .nav-bar a {
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-bar a:hover {
+            text-decoration: underline;
+        }
+
+        .nav-bar .assistant {
+            color: #ff0000;
+        }
+
+        @media (max-width: 600px) {
+            .time-display {
+                font-size: 80px;
+                margin-bottom: calc(100vh - 250px);
+            }
+
+            .time-input-group {
+                gap: 5px;
+            }
+
+            .time-input-item input {
+                width: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">标准北京时间</h1>
+        <div class="date-info" id="dateInfo"></div>
+        <div class="sync-info">本时间同步国家授时中心精确到毫秒</div>
+        <div class="divider"></div>
+        <div class="time-display" id="timeDisplay">00:00:00</div>
+        
+        <div class="time-controls">
+            <h3>设置时间</h3>
+            <div class="time-input-group">
+                <div class="time-input-item">
+                    <label>年</label>
+                    <input type="number" id="year" min="1900" max="2100" value="2026">
+                </div>
+                <div class="time-input-item">
+                    <label>月</label>
+                    <input type="number" id="month" min="1" max="12" value="1">
+                </div>
+                <div class="time-input-item">
+                    <label>日</label>
+                    <input type="number" id="day" min="1" max="31" value="5">
+                </div>
+                <div class="time-input-item">
+                    <label>时</label>
+                    <input type="number" id="hour" min="0" max="23" value="17">
+                </div>
+                <div class="time-input-item">
+                    <label>分</label>
+                    <input type="number" id="minute" min="0" max="59" value="31">
+                </div>
+                <div class="time-input-item">
+                    <label>秒</label>
+                    <input type="number" id="second" min="0" max="59" value="4">
+                </div>
+            </div>
+            <div class="button-group">
+                <button class="btn-set" onclick="setTime()">设置时间</button>
+                <button class="btn-reset" onclick="resetTime()">恢复当前时间</button>
+            </div>
+            <div class="status-info" id="statusInfo"></div>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <a href="#">北京时间</a>
+        <a href="#">日期计算器</a>
+        <a href="#">在线时钟</a>
+        <a href="#">淘宝时间</a>
+        <a href="#">秒表计时器</a>
+        <a href="#">北京时间校准</a>
+        <a href="#" class="assistant">北京时间同步助手</a>
+    </div>
+
+    <script>
+        let isFixed = false;
+        let fixedTime = null;
+        let updateInterval = null;
+
+        // 获取星期几的中文
+        function getWeekday(date) {
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            return weekdays[date.getDay()];
+        }
+
+        // 获取周数
+        function getWeekNumber(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        }
+
+        // 格式化数字（补零）
+        function padZero(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        // 更新显示
+        function updateDisplay(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hour = padZero(date.getHours());
+            const minute = padZero(date.getMinutes());
+            const second = padZero(date.getSeconds());
+
+            // 更新日期信息
+            const weekday = getWeekday(date);
+            const weekNum = getWeekNumber(date);
+            document.getElementById('dateInfo').innerHTML = 
+                `现在是${year}年${month}月${day}日${weekday},<a href="#">第${padZero(weekNum)}周</a>`;
+
+            // 更新时间显示
+            document.getElementById('timeDisplay').textContent = `${hour}:${minute}:${second}`;
+        }
+
+        // 设置固定时间
+        function setTime() {
+            const year = parseInt(document.getElementById('year').value);
+            const month = parseInt(document.getElementById('month').value) - 1; // 月份从0开始
+            const day = parseInt(document.getElementById('day').value);
+            const hour = parseInt(document.getElementById('hour').value);
+            const minute = parseInt(document.getElementById('minute').value);
+            const second = parseInt(document.getElementById('second').value);
+
+            // 验证日期有效性
+            const date = new Date(year, month, day, hour, minute, second);
+            if (date.getFullYear() !== year || 
+                date.getMonth() !== month || 
+                date.getDate() !== day) {
+                alert('无效的日期！');
+                return;
+            }
+
+            // 设置固定时间
+            fixedTime = date;
+            isFixed = true;
+
+            // 清除之前的定时器
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
+
+            // 更新显示
+            updateDisplay(fixedTime);
+
+            // 显示状态信息
+            document.getElementById('statusInfo').textContent = 
+                `时间已设置为：${year}年${month + 1}月${day}日 ${padZero(hour)}:${padZero(minute)}:${padZero(second)}（已固定，不再变化）`;
+        }
+
+        // 恢复当前时间
+        function resetTime() {
+            isFixed = false;
+            fixedTime = null;
+            document.getElementById('statusInfo').textContent = '';
+
+            // 恢复输入框为当前时间
+            const now = new Date();
+            document.getElementById('year').value = now.getFullYear();
+            document.getElementById('month').value = now.getMonth() + 1;
+            document.getElementById('day').value = now.getDate();
+            document.getElementById('hour').value = now.getHours();
+            document.getElementById('minute').value = now.getMinutes();
+            document.getElementById('second').value = now.getSeconds();
+
+            // 重新启动定时器
+            startTimer();
+        }
+
+        // 启动定时器
+        function startTimer() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
+
+            updateInterval = setInterval(() => {
+                if (!isFixed) {
+                    updateDisplay(new Date());
+                }
+            }, 1000);
+
+            // 立即更新一次
+            if (!isFixed) {
+                updateDisplay(new Date());
+            }
+        }
+
+        // 初始化
+        window.onload = function() {
+            const now = new Date();
+            document.getElementById('year').value = now.getFullYear();
+            document.getElementById('month').value = now.getMonth() + 1;
+            document.getElementById('day').value = now.getDate();
+            document.getElementById('hour').value = now.getHours();
+            document.getElementById('minute').value = now.getMinutes();
+            document.getElementById('second').value = now.getSeconds();
+
+            startTimer();
+        };
+    </script>
+</body>
+</html>

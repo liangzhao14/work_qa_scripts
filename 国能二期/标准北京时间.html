@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>标准北京时间</title>
+<style>
+    body {
+        margin: 0;
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        background: #fff;
+        color: #000;
+        text-align: center;
+    }
+
+    .title {
+        font-size: 42px;
+        color: #4CAF50;
+        font-weight: bold;
+        margin-top: 30px;
+    }
+
+    .date-info {
+        margin-top: 10px;
+        font-size: 18px;
+    }
+
+    .week {
+        color: #0066ff;
+        margin-left: 5px;
+    }
+
+    .note {
+        color: #0066ff;
+        margin: 10px 0;
+    }
+
+    .line {
+        width: 80%;
+        height: 1px;
+        background: #ddd;
+        margin: 25px auto;
+    }
+
+    .time {
+        font-size: 160px;
+        color: #4080ff;
+        font-weight: bold;
+    }
+
+    /* 设置时间面板 */
+    .panel {
+        width: 78%;
+        margin: 40px auto;
+        padding: 30px;
+        background: #f5f5f5;
+        border-radius: 10px;
+    }
+
+    .panel h3 {
+        margin-bottom: 20px;
+        font-size: 22px;
+    }
+
+    .inputs {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .inputs div {
+        text-align: center;
+    }
+
+    .inputs input {
+        width: 70px;
+        height: 36px;
+        text-align: center;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .buttons {
+        margin-top: 15px;
+    }
+
+    .buttons button {
+        width: 140px;
+        height: 40px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 0 10px;
+    }
+
+    .btn-set {
+        background: #0066ff;
+        color: #fff;
+    }
+
+    .btn-reset {
+        background: #666;
+        color: #fff;
+    }
+
+    .status {
+        margin-top: 20px;
+        font-size: 15px;
+        color: #333;
+    }
+</style>
+</head>
+<body>
+
+<div class="title">标准北京时间</div>
+
+<div class="date-info">
+    现在是 <span id="dateText"></span>
+    <span class="week" id="weekText"></span>
+</div>
+
+<div class="note">本页面时间支持手动设置与自动同步</div>
+
+<div class="line"></div>
+
+<div class="time" id="timeText">00:00:00</div>
+
+<!-- 设置时间面板 -->
+<div class="panel">
+    <h3>设置时间</h3>
+
+    <div class="inputs">
+        <div>年<br><input id="y" value="2026"></div>
+        <div>月<br><input id="mo" value="1"></div>
+        <div>日<br><input id="d" value="5"></div>
+        <div>时<br><input id="h" value="17"></div>
+        <div>分<br><input id="mi" value="44"></div>
+        <div>秒<br><input id="s" value="9"></div>
+    </div>
+
+    <div class="buttons">
+        <button class="btn-set" onclick="setCustomTime()">设置时间</button>
+        <button class="btn-reset" onclick="resetTime()">恢复当前时间</button>
+    </div>
+
+    <div class="status" id="statusText"></div>
+</div>
+
+<script>
+    let timer = null;
+    let isFixed = false;
+    let fixedDate = null;
+
+    function getWeekNumber(date) {
+        const start = new Date(date.getFullYear(), 0, 1);
+        return Math.ceil((((date - start) / 86400000) + start.getDay() + 1) / 7);
+    }
+
+    function pad(n) {
+        return n.toString().padStart(2, '0');
+    }
+
+    function render(date) {
+        const weekdays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+        document.getElementById('dateText').innerText =
+            `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日 ${weekdays[date.getDay()]}，`;
+        document.getElementById('weekText').innerText =
+            `第${pad(getWeekNumber(date))}周`;
+
+        document.getElementById('timeText').innerText =
+            `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+    }
+
+    function startAuto() {
+        clearInterval(timer);
+        isFixed = false;
+        timer = setInterval(() => {
+            render(new Date());
+        }, 1000);
+        document.getElementById('statusText').innerText = '当前显示：系统时间（自动更新）';
+    }
+
+    function setCustomTime() {
+        const y = +yInput.value;
+        const mo = +moInput.value - 1;
+        const d = +dInput.value;
+        const h = +hInput.value;
+        const mi = +miInput.value;
+        const s = +sInput.value;
+
+        fixedDate = new Date(y, mo, d, h, mi, s);
+        isFixed = true;
+        clearInterval(timer);
+        render(fixedDate);
+
+        document.getElementById('statusText').innerText =
+            `时间已设置为：${y}年${mo+1}月${d}日 ${pad(h)}:${pad(mi)}:${pad(s)}（已固定，不再变化）`;
+    }
+
+    function resetTime() {
+        startAuto();
+    }
+
+    const yInput = document.getElementById('y');
+    const moInput = document.getElementById('mo');
+    const dInput = document.getElementById('d');
+    const hInput = document.getElementById('h');
+    const miInput = document.getElementById('mi');
+    const sInput = document.getElementById('s');
+
+    // 页面加载默认走系统时间
+    startAuto();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标准北京时间 - 自定义版</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", "Heiti SC", sans-serif;
+            text-align: center;
+            background-color: #fff;
+            margin: 0;
+            padding-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 标题样式 */
+        .title {
+            color: #4cae4c; /* 接近图中的绿色 */
+            font-size: 38px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        /* 日期行样式 */
+        .date-line {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .week-highlight {
+            color: #0000ff; /* 链接蓝 */
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* 底部说明文字样式 */
+        .sync-info {
+            font-size: 14px;
+            color: #000099; /* 深蓝色 */
+            margin-bottom: 30px;
+        }
+
+        /* 巨大时间样式 */
+        .big-time {
+            font-family: Arial, sans-serif; /* 使用无衬线字体 */
+            font-size: 160px; /* 超大字体 */
+            font-weight: bold;
+            color: #3b88ff; /* 亮蓝色 */
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+
+        /* ---------- 控制面板样式 (不包含在截图中) ---------- */
+        .controls {
+            margin-top: 80px;
+            padding: 20px;
+            border-top: 1px dashed #ccc;
+            background-color: #f9f9f9;
+            width: 80%;
+            border-radius: 8px;
+        }
+        
+        .controls h3 {
+            font-size: 16px;
+            color: #666;
+            margin-top: 0;
+        }
+
+        .input-group {
+            margin: 10px 0;
+        }
+
+        input {
+            padding: 8px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 8px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #3b88ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button.reset {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="title">标准北京时间</div>
+
+    <div class="date-line">
+        今天是<span id="dateText">2026年1月6日星期二</span>，<span class="week-highlight" id="weekText">第02周</span>
+    </div>
+
+    <div class="sync-info">
+        本时间同步国家授时中心精确到毫秒
+    </div>
+
+    <div class="big-time" id="timeDisplay">
+        10:00:23
+    </div>
+
+    <div class="controls">
+        <h3>🛠️ 设置面板 (截图时请只截取上方区域)</h3>
+        <div class="input-group">
+            <label>自定义日期时间: </label>
+            <input type="datetime-local" id="customInput" step="1">
+            <button onclick="setFixedTime()">应用设定并固定</button>
+            <button class="reset" onclick="startRealTime()">恢复实时走动</button>
+        </div>
+        <p style="font-size: 12px; color: #888;">说明：选择时间后点击“应用”，时钟将停止走动并固定显示您设置的时间。</p>
+    </div>
+
+    <script>
+        let intervalId = null;
+        const timeDisplay = document.getElementById('timeDisplay');
+        const dateText = document.getElementById('dateText');
+        const weekText = document.getElementById('weekText');
+        const customInput = document.getElementById('customInput');
+
+        // 计算一年中的第几周
+        function getWeekNumber(d) {
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+            var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            return weekNo;
+        }
+
+        // 格式化数字，补0
+        function pad(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        // 获取中文星期
+        function getWeekDayCN(date) {
+            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            return days[date.getDay()];
+        }
+
+        // 更新页面显示的核心函数
+        function renderPage(dateObj) {
+            const year = dateObj.getFullYear();
+            const month = dateObj.getMonth() + 1;
+            const day = dateObj.getDate();
+            const weekDay = getWeekDayCN(dateObj);
+            const weekNum = getWeekNumber(dateObj);
+
+            const hours = pad(dateObj.getHours());
+            const minutes = pad(dateObj.getMinutes());
+            const seconds = pad(dateObj.getSeconds());
+
+            // 更新日期行
+            dateText.innerText = `${year}年${month}月${day}日${weekDay}`;
+            weekText.innerText = `第${pad(weekNum)}周`;
+
+            // 更新大时间
+            timeDisplay.innerText = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // 模式1：实时走动
+        function startRealTime() {
+            if (intervalId) clearInterval(intervalId);
+            
+            // 立即执行一次
+            renderPage(new Date());
+            
+            // 每秒更新
+            intervalId = setInterval(() => {
+                renderPage(new Date());
+            }, 1000);
+        }
+
+        // 模式2：固定时间
+        function setFixedTime() {
+            const inputVal = customInput.value;
+            if (!inputVal) {
+                alert("请先选择日期和时间！");
+                return;
+            }
+
+            // 清除定时器，停止走动
+            if (intervalId) clearInterval(intervalId);
+
+            const fixedDate = new Date(inputVal);
+            renderPage(fixedDate);
+        }
+
+        // 初始化：默认按照图片中的时间设置好输入框，并显示该静态时间
+        // 为了方便你直接看到效果，我默认初始化为图中的时间并暂停
+        window.onload = function() {
+            // 设置默认值为图中的 2026-01-06 10:00:23
+            const defaultStr = "2026-01-06T10:00:23";
+            customInput.value = defaultStr;
+            
+            // 渲染一次静态时间
+            setFixedTime(); 
+        };
+
+    </script>
+</body>
+</html>
