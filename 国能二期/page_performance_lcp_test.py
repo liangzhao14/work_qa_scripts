@@ -8,6 +8,7 @@ import time
 URL = "https://cn.bing.com/"
 TEST_TIMES = 3
 
+
 TIMEOUT = 60000
 SLA_MS = 2000   # 2 秒
 
